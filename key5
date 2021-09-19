@@ -1,0 +1,159 @@
+#include<bits/stdc++.h>
+using namespace std;
+#include <ctype.h>
+#include <string.h>
+int m=0;
+int level=0;
+#define MAXWORD 101  //关键字最大的个数
+char ww[101]; 
+struct key   //结构体数组,关键字按顺序排列
+{
+ char *word;
+ int count;
+} keytab[] = {
+	"auto",0,
+	"break",0,
+	"case",0,
+	"char",0,
+	"const",0,
+	"continue",0,
+	"default",0,
+	"do",0,
+	"double",0,
+	"else",0,
+	"enum",0,
+	"extern",0,
+	"float",0,
+	"for",0,
+	"goto",0,
+	"if",0,
+	"int",0,
+	"long",0,
+	"register",0,
+	"return",0,
+	"short",0,
+	"signed",0,
+	"sizeof",0,
+	"static",0,
+	"struct",0,
+	"switch",0,
+	"typedef",0,
+	"union",0,
+	"unsigned",0,
+	"void",0,
+	"volatile",0,
+	"while",0,
+};
+//关键字的个数等于数组的长度除以单个元素的长度
+#define NKEYS (sizeof keytab / sizeof(struct key))
+
+int getword(char *, int); //从输入中读取下一个字符或单词
+int binsearch(char *, struct key *, int); //在tab[0]到tab[n-1]中查找单词
+void readTxt(string file); //读取txt文件内容
+
+
+/* binsearch:  find word in tab[0]...tab[n-1] */
+//折半查找
+int binsearch(char *word, struct key tab[], int n0)
+{
+    int cond;
+    int low, high, mid;
+    low = 0;
+    high = n0 - 1;
+    while (low <= high)
+ {
+        mid = (low+high) / 2;
+        if ((cond = strcmp(word, tab[mid].word)) < 0)
+            high = mid - 1;
+        else if (cond > 0)
+            low = mid + 1;
+        else
+            return mid;
+    }
+    return -1;
+}
+
+/*getword从输入中读取下一个单词是以字母开头的字母和数字串，
+也可以是以字母开头的字母和数字串，也可以是一个非空白字符串。
+函数返回值可能是单词的第一个字符、文件结束符EOF或字符本身（如果该字符不是字母字符本身）*/
+int i=0;
+int getword(char *word, int lim)
+{
+    char *w = word;
+    for(i;i<m;i++)
+    {
+    	if(isspace(ww[i])==0)
+    	break;
+	}//c跳过空白符
+        *w++ = ww[i];
+    if (!isalpha(ww[i]) )//ww[i]不是字母
+    {
+        *w = '\0';
+        return ww[i++];
+    }
+    i++;
+    for ( ; --lim > 0; w++)
+ {
+        if (!isalnum(*w =ww[i++])) //输入不是字母或数字时，该单词结束
+  		{
+            i--;
+            break;
+        }
+ }
+    *w = '\0'; //字符串结束符'\0'
+	 //返回值是单词的第一个字符
+}
+
+//读取txt文件 
+void readTxt(string file)
+{
+    ifstream infile; 
+    infile.open(file.data());   //将文件流对象与文件连接起来 
+    assert(infile.is_open());   //若失败,则输出错误消息,并终止程序运行 
+
+    char c;
+    infile >> noskipws;
+    while (!infile.eof())
+    {
+        infile>>c;
+		ww[m++]=c;
+
+    }
+    infile.close();             //关闭文件输入流 
+}
+
+
+int main()
+{
+		int u;
+	    string str;
+	    cin>>str;
+	    cin>>level;
+	    readTxt(str) ;
+	    char word[MAXWORD];//word0记录上一个单词 
+	    for(int i=0;i<m;i++)
+	   {
+		    getword(word, MAXWORD);
+		    if (isalpha(word[0])) //word的第一个为字母
+		    {
+				if ((u= binsearch(word, keytab, NKEYS)) >= 0)
+		        {
+					keytab[u].count++;//在结构体中查找成功，关键字计数加1
+				}
+			} 
+	   }
+	 //统计结束，打印结果
+	    int count0=0;
+	    for (int i=0;i<NKEYS;i++)
+		{
+			count0+=keytab[i].count;
+	 	}
+	    cout<<"total num: "<<count0<<endl;
+	    if(level==2)
+	    {
+	    	cout<<"switch num: "<<keytab[25].count<<endl;
+		}
+	//基础要求 
+}
+
+
